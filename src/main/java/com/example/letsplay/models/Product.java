@@ -6,13 +6,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "products")
 public class Product {
     @Id
-    private String id;
+    private String id; // Automatically maps to MongoDB's _id
     private String name;
     private String description;
     private Double price;
-    private String userId; // Manual foreign key link
+    private String userId;
 
-    public Product() {} // constructor
+    public Product() {}
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }

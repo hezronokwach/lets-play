@@ -1,0 +1,7 @@
+com\example\letsplay\controllers\ProductController.class
+com\example\letsplay\repository\ProductRepo.class
+com\example\letsplay\config\MongoConfig.class
+com\example\letsplay\services\ProductService.class
+com\example\letsplay\LetsPlayApplication.class
+com\example\letsplay\models\User.class
+com\example\letsplay\models\Product.class
