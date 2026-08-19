@@ -2,6 +2,8 @@ package com.example.letsplay.services;
 
 import com.example.letsplay.models.Product;
 import com.example.letsplay.repository.ProductRepo;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,5 +70,24 @@ public class ProductService {
             return true;
         }
         return false;
+    }
+    public Product updateProductWithOwnershipCheck(String id, Product productDetails) {
+        Product existingProduct = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = (String) auth.getCredentials();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // Reject if user is not admin and does not own the product
+        if (!isAdmin && !existingProduct.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("Unauthorized: You can only manage your own products");
+        }
+
+        existingProduct.setName(productDetails.getName());
+        existingProduct.setDescription(productDetails.getDescription());
+        existingProduct.setPrice(productDetails.getPrice());
+        return productRepo.save(existingProduct);
     }
 }
