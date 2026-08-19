@@ -25,21 +25,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // 1. MUST DISABLE CSRF FOR STATELESS JWT APIS
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public Auth Endpoints
+                        // 2. MUST PERMIT ALL AUTH ENDPOINTS
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        // PUBLIC ACCESS: Anyone can view products without loggin in
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-
-                        // ADMIN ONLY: Managing users or admin actions
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
-
-                        // Authenticated Users (USER or ADMIN) can mutate products
-                        .requestMatchers("/api/products/**").hasAnyRole("USER", "ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
